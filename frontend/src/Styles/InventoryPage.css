@@ -1,0 +1,215 @@
+/* --- Estilos Generales --- */
+.inventory-page {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    padding: 20px;
+    background-color: #f4f7f6; /* Fondo gris muy suave */
+    min-height: 100vh;
+}
+
+/* --- Cabecera --- */
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Centra verticalmente título y botones */
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: 16px;
+    align-items: center; /* Alineación vertical perfecta */
+}
+
+/* --- Buscador --- */
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px 16px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.search-bar .search-icon {
+    color: #F9812A;
+    margin-right: 10px;
+}
+
+.search-bar input {
+    border: none;
+    outline: none;
+    font-size: 14px;
+    width: 200px;
+}
+
+/* --- Botón Agregar --- */
+.add-button {
+    background-color: #F9812A;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center; /* Icono y texto centrados */
+    gap: 8px;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.add-button:hover {
+    background-color: #e06a1a;
+    transform: translateY(-1px);
+}
+
+/* --- Contenedor de Tabla --- */
+.table-container {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* IMPORTANTE: Para bordes redondos en tabla */
+    border: 1px solid #f0f0f0;
+}
+
+.inventory-table {
+    width: 100%;
+    border-collapse: collapse; /* Elimina doble borde */
+}
+
+/* --- Celdas Generales --- */
+.inventory-table th,
+.inventory-table td {
+    padding: 16px 20px; /* Espaciado interno consistente */
+    text-align: left;
+    border-bottom: 1px solid #f1f1f1;
+    vertical-align: middle; /* CLAVE: Centra todo verticalmente en la fila */
+}
+
+.inventory-table th {
+    font-size: 12px;
+    font-weight: 700;
+    color: #7f8c8d;
+    text-transform: uppercase;
+    background-color: #fafafa;
+    letter-spacing: 0.5px;
+}
+
+.inventory-table td {
+    font-size: 14px;
+    color: #424242;
+}
+
+/* --- Celda de Producto (Imagen + Texto) --- */
+.product-cell {
+    display: flex;
+    align-items: center; /* Centra imagen y texto verticalmente */
+    gap: 16px;
+}
+
+.product-image {
+    width: 52px;
+    height: 52px;
+    border-radius: 8px; /* Redondeado suave */
+    object-fit: cover;
+    border: 1px solid #eee;
+}
+
+.product-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+/* --- Barra de Stock Dinámica --- */
+.stock-cell {
+    display: flex;
+    align-items: center; /* Alinea barra y número */
+    gap: 12px;
+}
+
+.stock-bar-container {
+    width: 80px; /* Ancho fijo de la pista */
+    height: 8px;
+    background-color: #eee; /* Fondo gris */
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.stock-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.5s ease; /* Animación suave al cambiar stock */
+}
+
+/* Colores de la barra */
+.stock-bar-fill.green { background-color: #2ecc71; }
+.stock-bar-fill.yellow { background-color: #f1c40f; }
+.stock-bar-fill.red { background-color: #e74c3c; }
+
+.stock-number {
+    font-weight: 600;
+    min-width: 30px; /* Para que los números no muevan la barra */
+}
+
+/* --- Precio --- */
+.price-text {
+    font-family: monospace; /* Alinea mejor los números */
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 15px;
+}
+
+/* --- Botones de Acción (Editar/Eliminar) --- */
+.actions-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Espacio entre botones */
+}
+
+.action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 8px;
+    border-radius: 6px;
+    transition: background 0.2s, color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Botón Editar */
+.action-btn.edit {
+    color: #95a5a6;
+}
+.action-btn.edit:hover {
+    background-color: #f0f0f0;
+    color: #F9812A;
+}
+
+/* Botón Eliminar */
+.action-btn.delete {
+    color: #e74c3c;
+}
+.action-btn.delete:hover {
+    background-color: #ffeaea;
+    color: #c0392b;
+}
+
+.loader-container {
+    padding: 50px;
+    text-align: center;
+    color: #F9812A;
+    font-size: 1.2rem;
+}

@@ -1,0 +1,136 @@
+/* Estilo general del contenedor blanco */
+.reporte-saldos-container {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 24px;
+  max-width: 800px;
+  margin: 2rem auto; /* Centrado para el ejemplo */
+}
+
+.reporte-saldos-container h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+/* Barra de búsqueda */
+.reporte-search-bar {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 20px;
+  background-color: #f9f9f9;
+}
+
+.reporte-search-bar .search-icon {
+  color: #888;
+  margin-right: 8px;
+}
+
+.reporte-search-bar input {
+  border: none;
+  outline: none;
+  background-color: transparent;
+  width: 100%;
+  font-size: 1rem;
+}
+
+/* Contenedor de la tabla */
+.reporte-table-container {
+  overflow-x: auto;
+}
+
+.reporte-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.reporte-table th,
+.reporte-table td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.reporte-table th {
+  background-color: #f7f7f7;
+  color: #555;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.reporte-table td {
+  color: #333;
+  vertical-align: middle;
+}
+
+.reporte-table .user-icon {
+  color: #aaa;
+}
+
+/* Mensajes de estado */
+.loading-message,
+.error-message,
+.no-data-message {
+  text-align: center;
+  padding: 20px;
+  color: #777;
+  font-style: italic;
+}
+
+.error-message {
+  color: #d9534f;
+}
+
+/* Footer con el botón */
+.reporte-footer {
+  display: flex;
+  justify-content: center; /* Centrado como en la imagen */
+  margin-top: 24px;
+}
+
+.btn-aceptar {
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px 30px;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-aceptar:hover {
+  background-color: #e6e6e6;
+}
+
+/* ... (Estilos anteriores) ... */
+
+/* --- ¡NUEVO! --- */
+/* Estilos para el pie de tabla (total) */
+.reporte-table tfoot tr {
+  border-top: 2px solid #ccc; /* Línea gruesa para separar */
+  background-color: #f9f9f9;
+}
+
+.reporte-table .total-label {
+  text-align: right; /* Alinea "Total" a la derecha */
+  padding-right: 15px;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.reporte-table .total-amount {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: #000; /* Resalta el monto total */
+}
+/* --- FIN DE LO NUEVO --- */

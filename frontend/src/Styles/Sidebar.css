@@ -1,0 +1,97 @@
+.sidebar {
+    width: 80px; 
+    background-color: #ed6c11;
+    color: white;
+    padding: 15px 0;
+    transition: width 0.3s ease;
+    overflow: hidden; 
+    display: flex;
+    flex-direction: column;
+}
+
+
+.sidebar.open {
+    width: 250px
+}
+
+/* Añade esto a tu archivo Sidebar.css */
+
+.sidebar-header {
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.logo-image {
+  width: 230px;  /* Ajusta el ancho como necesites */
+  height: auto;  /* Mantiene la proporción */
+}
+
+/* Si el sidebar está colapsado (opcional) */
+.sidebar:not(.open) .logo-image {
+   width: 40px; /* Un tamaño más pequeño para el modo colapsado */
+}
+.logo-text {
+    font-size: 24px;
+    font-weight: bold;
+    white-space: nowrap; /* Evita que el texto se rompa */
+    opacity: 0; /* Oculto por defecto */
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.open .logo-text {
+    opacity: 1; /* Visible cuando está abierto */
+}
+
+.toggle-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    min-width: 40px; /* Asegura espacio para el clic */
+    text-align: center;
+}
+
+/* Estilos de los links de navegación */
+.nav-menu {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: white;
+    white-space: nowrap; /* Evita que el texto se rompa */
+}
+
+.nav-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Estilo para el link de la página activa */
+.nav-item.active {
+    background-color: rgba(255, 255, 255, 0.2);
+    font-weight: bold;
+}
+
+.nav-icon {
+    font-size: 24px;
+    min-width: 40px; /* Asegura alineación */
+    text-align: center;
+}
+
+.nav-text {
+    margin-left: 15px;
+    opacity: 0; /* Oculto por defecto */
+    transition: opacity 0.3s ease;
+}
+
+.sidebar.open .nav-text {
+    opacity: 1; /* Visible cuando está abierto */
+}

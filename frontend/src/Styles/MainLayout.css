@@ -1,0 +1,20 @@
+
+.main-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f4f7fa;
+}
+
+/* Contenedor para el contenido (Header + Página) */
+.main-content-area {
+    flex-grow: 1; /* Ocupa el resto del espacio */
+    display: flex;
+    flex-direction: column;
+    transition: margin-left 0.3s ease; /* Animación de contenido */
+}
+
+
+.page-content {
+    padding: 24px;
+    flex-grow: 1;
+}
