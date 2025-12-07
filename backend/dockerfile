@@ -1,0 +1,28 @@
+# Usa una versión de Python compatible
+FROM python:3.10-slim
+
+# Evita que Python guarde archivos .pyc y fuerza los logs a la consola
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# Crea la carpeta de trabajo
+WORKDIR /app
+
+# Instala dependencias del sistema necesarias para Postgres
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copia los requerimientos e instálalos
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia el resto del código
+COPY . .
+
+# Expone el puerto 8000
+EXPOSE 8000
+
+# Comando por defecto (aunque docker-compose suele encargarse, esto es buena práctica)
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

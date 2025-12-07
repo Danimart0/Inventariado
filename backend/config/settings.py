@@ -133,3 +133,29 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+import os # Asegúrate de tener esto al inicio del archivo
+
+# ...
+
+# CONFIGURACIÓN DE BASE DE DATOS HÍBRIDA
+# Si detecta que está en Docker, usa Postgres. Si no, usa SQLite local.
+if os.environ.get('RUNNING_IN_DOCKER'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DB', 'milupita_db'),
+            'USER': os.environ.get('POSTGRES_USER', 'usuario'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'password'),
+            'HOST': os.environ.get('POSTGRES_HOST', 'db'), # 'db' es el nombre del servicio en docker-compose
+            'PORT': '5432',
+        }
+    }
+else:
+    # Configuración Local (SQLite)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }

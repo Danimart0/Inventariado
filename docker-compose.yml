@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:13
+    container_name: contenedor_db_lupita
+    restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=milupita_db
+      - POSTGRES_USER=mi_usuario_lupita
+      - POSTGRES_PASSWORD=mi_password_seguro
+
+  backend:
+    build: ./backend
+    container_name: contenedor_backend_lupita
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - POSTGRES_DB=milupita_db
+      - POSTGRES_USER=mi_usuario_lupita
+      - POSTGRES_PASSWORD=mi_password_seguro
+      - POSTGRES_HOST=db
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: contenedor_frontend_lupita
+    restart: always
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
