@@ -5,12 +5,12 @@ services:
     image: postgres:13
     container_name: contenedor_db_lupita
     restart: always
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_DB=milupita_db
       - POSTGRES_USER=mi_usuario_lupita
       - POSTGRES_PASSWORD=mi_password_seguro
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
 
   backend:
     build: ./backend
@@ -18,6 +18,8 @@ services:
     restart: always
     ports:
       - "8000:8000"
+    volumes:
+      - ./backend:/app
     environment:
       - POSTGRES_DB=milupita_db
       - POSTGRES_USER=mi_usuario_lupita
@@ -32,6 +34,8 @@ services:
     restart: always
     ports:
       - "3000:3000"
+    environment:
+      - API_URL=http://backend:8000
     stdin_open: true
     tty: true
     depends_on:

@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
-// 1. Importa los iconos que sí usas
 import { FaSearch, FaPlus, FaEdit, FaTrash, FaTimes, FaUserCircle } from 'react-icons/fa';
-// 2. Importa tu nuevo archivo CSS
 import '../Styles/Cliente.css';
 
-// URL de la API
-const API_URL = '/api/clientes/';
+// --------------------- BASE URL ---------------------
+const API_BASE_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:8000";
+const API_URL = `${API_BASE_URL}/api/clientes/`;
 
-// --- Componente del Modal ---
+// --------------------- MODAL ---------------------
 function ClienteModal({ modalData, onClose, onSave }) {
   const [formData, setFormData] = useState({
     nombre: '',
@@ -52,13 +51,10 @@ function ClienteModal({ modalData, onClose, onSave }) {
   };
 
   return (
-    // Reemplazamos clases de Tailwind por las del CSS
     <div className="modal-overlay">
       <div className="modal-content">
         <div className="modal-header">
-          <h2>
-            {isEditMode ? 'Editar Cliente' : 'Agregar Nuevo Cliente'}
-          </h2>
+          <h2>{isEditMode ? 'Editar Cliente' : 'Agregar Nuevo Cliente'}</h2>
           <button onClick={onClose} className="close-btn">
             <FaTimes size={20} />
           </button>
@@ -114,17 +110,10 @@ function ClienteModal({ modalData, onClose, onSave }) {
           </div>
 
           <div className="modal-footer">
-            <button
-              type="button"
-              onClick={onClose}
-              className="btn btn-secondary"
-            >
+            <button type="button" onClick={onClose} className="btn btn-secondary">
               Cancelar
             </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-            >
+            <button type="submit" className="btn btn-primary">
               {isEditMode ? 'Guardar Cambios' : 'Crear Cliente'}
             </button>
           </div>
@@ -134,8 +123,7 @@ function ClienteModal({ modalData, onClose, onSave }) {
   );
 }
 
-// --- Componente Principal de la Página ---
-// 3. Renombra el archivo a "ClientesPage.jsx" para que coincida con el import
+
 export default function ClientesPage() {
   const [clientes, setClientes] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -147,24 +135,24 @@ export default function ClientesPage() {
     fetchClientes();
   }, []);
 
+  // --------------------- FETCH CLIENTES ---------------------
   const fetchClientes = async () => {
     setLoading(true);
     setError(null);
     try {
       const response = await fetch(API_URL);
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: No se pudo conectar a la API.`);
-      }
+      if (!response.ok) throw new Error(`Error ${response.status}`);
       const data = await response.json();
       setClientes(data);
     } catch (err) {
-      console.error("Error fetching data:", err);
-      setError(err.message);
+      console.error("Error fetching clientes:", err);
+      setError('No se pudo conectar a la API.');
     } finally {
       setLoading(false);
     }
   };
 
+  // --------------------- FILTRADO ---------------------
   const filteredClientes = useMemo(() => {
     return clientes.filter((cliente) =>
       cliente.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -172,6 +160,7 @@ export default function ClientesPage() {
     );
   }, [clientes, searchTerm]);
 
+  // --------------------- GUARDAR CLIENTE (POST / PUT) ---------------------
   const handleSave = async (formData) => {
     const isEditMode = modal.type === 'edit';
     const url = isEditMode ? `${API_URL}${modal.cliente.id}/` : API_URL;
@@ -179,7 +168,7 @@ export default function ClientesPage() {
 
     try {
       const response = await fetch(url, {
-        method: method,
+        method,
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
@@ -188,37 +177,33 @@ export default function ClientesPage() {
         const errorData = await response.json();
         throw new Error(JSON.stringify(errorData));
       }
+
       setModal(null);
-      fetchClientes(); 
+      fetchClientes();
     } catch (err) {
-      console.error(`Error guardando cliente:`, err);
-      setError(`No se pudo guardar: ${err.message}`);
+      console.error("Error guardando cliente:", err);
+      setError('No se pudo guardar el cliente.');
     }
   };
 
+  // --------------------- ELIMINAR CLIENTE ---------------------
   const handleDelete = async (clienteId) => {
-    if (!window.confirm("¿Estás seguro de que deseas eliminar este cliente?")) {
-      return;
-    }
+    if (!window.confirm("¿Estás seguro de eliminar este cliente?")) return;
+
     try {
-      const response = await fetch(`${API_URL}${clienteId}/`, {
-        method: 'DELETE',
-      });
-      if (!response.ok && response.status !== 204) {
-        throw new Error('No se pudo eliminar el cliente.');
-      }
-      fetchClientes(); 
+      const response = await fetch(`${API_URL}${clienteId}/`, { method: 'DELETE' });
+      if (!response.ok && response.status !== 204) throw new Error('No se pudo eliminar el cliente.');
+      fetchClientes();
     } catch (err) {
-      console.error(`Error eliminando cliente:`, err);
-      setError(err.message);
+      console.error("Error eliminando cliente:", err);
+      setError('No se pudo eliminar el cliente.');
     }
   };
 
-  // Handlers de UI
+  // --------------------- UI HANDLERS ---------------------
   const openModal = (type, cliente = null) => setModal({ type, cliente });
   const closeModal = () => setModal(null);
-  
-  // Funciones de Formato
+
   const formatCurrency = (amount) => {
     const numericAmount = parseFloat(amount) || 0;
     return new Intl.NumberFormat('es-MX', {
@@ -238,11 +223,9 @@ export default function ClientesPage() {
     });
   };
 
-  // --- Renderizado del Componente ---
+  // --------------------- RENDER ---------------------
   return (
-    // 4. Usamos las clases del archivo CSS
     <div className="clientes-page">
-      
       <header className="page-header">
         <h1>Gestor de Clientes</h1>
         <div className="header-actions">
@@ -256,10 +239,7 @@ export default function ClientesPage() {
             />
           </div>
           
-          <button
-            onClick={() => openModal('add')}
-            className="add-button"
-          >
+          <button onClick={() => openModal('add')} className="add-button">
             <FaPlus />
             <span>Agregar</span>
           </button>
@@ -269,7 +249,7 @@ export default function ClientesPage() {
       <div className="table-container">
         {loading && <p className="loading-message">Cargando clientes...</p>}
         {error && <p className="error-message">{error}</p>}
-        
+
         {!loading && !error && (
           <table className="clientes-table">
             <thead>
@@ -280,12 +260,10 @@ export default function ClientesPage() {
                 <th>Acciones</th>
               </tr>
             </thead>
-            
             <tbody>
               {filteredClientes.length > 0 ? (
                 filteredClientes.map((cliente) => (
                   <tr key={cliente.id}>
-                    
                     <td className="cliente-cell">
                       <span className="cliente-avatar">
                         <FaUserCircle size={24} />
@@ -295,24 +273,13 @@ export default function ClientesPage() {
                         <div className="detalle">{cliente.direccion || 'Sin dirección'}</div>
                       </div>
                     </td>
-                    
                     <td>{formatCurrency(cliente.saldo_actual)}</td>
-                    
                     <td>{formatDate(cliente.ultimo_pago)}</td>
-                    
                     <td className="actions-cell">
-                      <button
-                        onClick={() => openModal('edit', cliente)}
-                        className="action-btn edit-btn"
-                        title="Editar"
-                      >
+                      <button onClick={() => openModal('edit', cliente)} className="action-btn edit-btn" title="Editar">
                         <FaEdit size={18} />
                       </button>
-                      <button
-                        onClick={() => handleDelete(cliente.id)}
-                        className="action-btn delete-btn"
-                        title="Eliminar"
-                      >
+                      <button onClick={() => handleDelete(cliente.id)} className="action-btn delete-btn" title="Eliminar">
                         <FaTrash size={18} />
                       </button>
                     </td>
@@ -320,9 +287,7 @@ export default function ClientesPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="no-data-message">
-                    No se encontraron clientes.
-                  </td>
+                  <td colSpan="4" className="no-data-message">No se encontraron clientes.</td>
                 </tr>
               )}
             </tbody>
@@ -330,14 +295,7 @@ export default function ClientesPage() {
         )}
       </div>
 
-      {/* El modal se renderiza aquí si 'modal' no es null */}
-      {modal && (
-        <ClienteModal
-          modalData={modal}
-          onClose={closeModal}
-          onSave={handleSave}
-        />
-      )}
+      {modal && <ClienteModal modalData={modal} onClose={closeModal} onSave={handleSave} />}
     </div>
   );
 }

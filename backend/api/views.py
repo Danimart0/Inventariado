@@ -43,3 +43,8 @@ class MovimientoStockViewSet(viewsets.ModelViewSet):
 class CajeroViewSet(viewsets.ModelViewSet):
     queryset = Cajero.objects.all()
     serializer_class = CajeroSerializer
+
+ 
+def list(self, request, *args, **kwargs):
+    print("📢 ¡HOLA DOCKER! SI LEES ESTO, EL VOLUMEN FUNCIONA") # <--- Agrega esto
+    return super().list(request, *args, **kwargs)

@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import axios from 'axios';
 import { FaSearch, FaUserCircle } from 'react-icons/fa';
 import '../Styles/ReporteSaldos.css'; 
 
-const API_URL = '/api/clientes/';
+const API_BASE_URL = 'http://localhost:8000';
+const API_URL = `${API_BASE_URL}/api/clientes/`;
 
 export default function ReporteSaldos() {
   const [clientes, setClientes] = useState([]);
@@ -18,15 +20,11 @@ export default function ReporteSaldos() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch(API_URL);
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: No se pudo conectar a la API.`);
-      }
-      const data = await response.json();
-      setClientes(data);
+      const response = await axios.get(API_URL);
+      setClientes(response.data);
     } catch (err) {
       console.error("Error fetching data:", err);
-      setError(err.message);
+      setError('No se pudo conectar con la API');
     } finally {
       setLoading(false);
     }
@@ -38,15 +36,12 @@ export default function ReporteSaldos() {
     );
   }, [clientes, searchTerm]);
 
-  // --- ¡NUEVO! ---
-  // Calcula el total de la deuda basándose SOLO en los clientes filtrados
   const totalDeuda = useMemo(() => {
     return filteredClientes.reduce(
       (sum, cliente) => sum + (parseFloat(cliente.saldo_actual) || 0),
-      0 // Valor inicial
+      0
     );
   }, [filteredClientes]);
-  // --- FIN DE LO NUEVO ---
 
   const formatCurrency = (amount) => {
     const numericAmount = parseFloat(amount) || 0;
@@ -108,8 +103,6 @@ export default function ReporteSaldos() {
                 </tr>
               )}
             </tbody>
-            {/* --- ¡NUEVO! --- */}
-            {/* Mostramos el pie de tabla solo si hay clientes */}
             {filteredClientes.length > 0 && (
               <tfoot>
                 <tr>
@@ -122,7 +115,6 @@ export default function ReporteSaldos() {
                 </tr>
               </tfoot>
             )}
-            {/* --- FIN DE LO NUEVO --- */}
           </table>
         )}
       </div>
