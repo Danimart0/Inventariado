@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 15s # Cada cuánto tiempo Prometheus pide datos
+
+scrape_configs:
+  - job_name: 'django-backend'
+    metrics_path: '/metrics' # La ruta que habilitaste en urls.py
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['backend:8000'] 

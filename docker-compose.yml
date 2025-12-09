@@ -5,12 +5,12 @@ services:
     image: postgres:13
     container_name: contenedor_db_lupita
     restart: always
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
     environment:
       - POSTGRES_DB=milupita_db
       - POSTGRES_USER=mi_usuario_lupita
       - POSTGRES_PASSWORD=mi_password_seguro
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
 
   backend:
     build: ./backend
@@ -18,15 +18,16 @@ services:
     restart: always
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend:/app
     environment:
       - POSTGRES_DB=milupita_db
       - POSTGRES_USER=mi_usuario_lupita
       - POSTGRES_PASSWORD=mi_password_seguro
       - POSTGRES_HOST=db
+      - RUNNING_IN_DOCKER=True
     depends_on:
       - db
+      - loki # El backend necesita que Loki esté listo para enviar logs al iniciar
+    command: ["sh", "-c", "python manage.py makemigrations && python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"]
 
   frontend:
     build: ./frontend
@@ -34,12 +35,49 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    environment:
-      - API_URL=http://backend:8000
     stdin_open: true
     tty: true
     depends_on:
       - backend
 
+  # --- SERVICIOS DE OBSERVABILIDAD ---
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: contenedor_prometheus
+    restart: always
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # IMPORTANTE: Debes crear este archivo
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - "9090:9090"
+    depends_on:
+      - backend
+
+  loki:
+    image: grafana/loki:main
+    container_name: contenedor_loki
+    restart: always
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml # Usa la config por defecto de Loki
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: contenedor_grafana
+    restart: always
+    volumes:
+      - grafana_data:/var/lib/grafana
+    ports:
+      - "3001:3000" # Accederás por localhost:3001
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin # Contraseña inicial para Grafana
+    depends_on:
+      - prometheus
+      - loki
+
 volumes:
   postgres_data:
+  grafana_data:
