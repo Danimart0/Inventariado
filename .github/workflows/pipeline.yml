@@ -1,41 +1,62 @@
-name: CI/CD Pipeline Inventario
+name: CI/CD Inventario
 
-# Se ejecuta cuando haces push a la rama 'main'
+# Se activa cuando haces PUSH a la rama 'main'
 on:
   push:
     branches: [ "main" ]
 
 jobs:
-  # --- TRABAJO 1: PRUEBAS UNITARIAS ---
-  test_unitarios:
+  # --- JOB 1: PRUEBAS UNITARIAS ---
+  test_app:
     runs-on: ubuntu-latest
+    # Configuración de servicio de Base de Datos para las pruebas
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: milupita_db
+          POSTGRES_USER: mi_usuario_lupita
+          POSTGRES_PASSWORD: mi_password_seguro
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
-      - name: Descargar código
+      - name: Descargar Código
         uses: actions/checkout@v3
 
-      - name: Configurar Python
+      - name: Instalar Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.9'
+          python-version: '3.10'
 
       - name: Instalar Dependencias
-        # Instala lo necesario para correr las pruebas
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install -r backend/requirements.txt
 
-      - name: Ejecutar Pruebas Unitarias
-        # Si esto falla, el pipeline se detiene aquí.
+      - name: Correr Pruebas Unitarias
+        env:
+          # Conectamos Django a la DB temporal del Pipeline
+          POSTGRES_DB: milupita_db
+          POSTGRES_USER: mi_usuario_lupita
+          POSTGRES_PASSWORD: mi_password_seguro
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
         run: |
           cd backend
           python manage.py test
 
-  # --- TRABAJO 2: CONSTRUIR Y SUBIR IMAGEN ---
+  # --- JOB 2: CONSTRUCCIÓN Y PUSH (Solo si pasan los tests) ---
   build_and_push:
-    needs: test_unitarios  # IMPORTANTE: Solo corre si los tests pasaron
+    needs: test_app  # <--- REQUISITO CLAVE: No corre si fallan los tests
     runs-on: ubuntu-latest
     steps:
-      - name: Descargar código
+      - name: Descargar Código
         uses: actions/checkout@v3
 
       - name: Login en Docker Hub
@@ -44,28 +65,27 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Calcular Versión
+      - name: Generar Versión Única
         id: version
-        # Genera una versión tipo v1.0.55 usando el número de ejecución de GitHub
+        # Genera v1.0.X donde X es el número de ejecución de GitHub
         run: echo "tag=v1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
 
-      - name: Construir y Subir Imagen Backend
+      - name: Construir y Subir Backend
         uses: docker/build-push-action@v4
         with:
           context: ./backend
           file: ./backend/Dockerfile
           push: true
-          # Aquí definimos las etiquetas (tags)
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/mi-proyecto-backend:${{ steps.version.outputs.tag }}
-            ${{ secrets.DOCKER_USERNAME }}/mi-proyecto-backend:latest
+            ${{ secrets.DOCKER_USERNAME }}/inventario-backend:${{ steps.version.outputs.tag }}
+            ${{ secrets.DOCKER_USERNAME }}/inventario-backend:latest
 
-      - name: Construir y Subir Imagen Frontend
+      - name: Construir y Subir Frontend
         uses: docker/build-push-action@v4
         with:
           context: ./frontend
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/mi-proyecto-frontend:${{ steps.version.outputs.tag }}
-            ${{ secrets.DOCKER_USERNAME }}/mi-proyecto-frontend:latest
+            ${{ secrets.DOCKER_USERNAME }}/inventario-frontend:${{ steps.version.outputs.tag }}
+            ${{ secrets.DOCKER_USERNAME }}/inventario-frontend:latest

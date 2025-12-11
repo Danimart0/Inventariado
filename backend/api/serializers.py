@@ -60,4 +60,22 @@ class CajeroSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cajero
         fields = '__all__' # Expone todos los campos definidos en models.py
-       
+    
+
+    # Agrega esto dentro de class MovimientoStockSerializer...
+
+    def create(self, validated_data):
+        # 1. Crear el movimiento
+        movimiento = MovimientoStock.objects.create(**validated_data)
+        
+        # 2. Actualizar el stock del producto
+        producto = movimiento.producto
+        if movimiento.tipo == 'entrada':
+            producto.stock += movimiento.cantidad
+        elif movimiento.tipo == 'salida':
+            producto.stock -= movimiento.cantidad
+        
+        # 3. Guardar el producto actualizado
+        producto.save()
+        
+        return movimiento
