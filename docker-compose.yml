@@ -1,8 +1,6 @@
 version: '3.8'
 
 services:
-
-  # --- BASE DE DATOS (Igual en ambos) ---
   db:
     image: postgres:13
     container_name: contenedor_db_lupita
@@ -14,51 +12,50 @@ services:
       - POSTGRES_USER=mi_usuario_lupita
       - POSTGRES_PASSWORD=mi_password_seguro
 
-  # --- BACKEND (FUSIONADO) ---
   backend:
     build: ./backend
     container_name: contenedor_backend_lupita
     restart: always
     ports:
       - "8000:8000"
-    # KEEPT: Mantenemos TU volumen para que puedas editar código sin reconstruir
+    # --- RECUPERADO DE TU VERSIÓN (IMPORTANTE) ---
     volumes:
-      - ./backend:/app
+      - ./backend:/app  # Esto permite que veas cambios sin reconstruir
+    # ---------------------------------------------
     environment:
       - POSTGRES_DB=milupita_db
       - POSTGRES_USER=mi_usuario_lupita
       - POSTGRES_PASSWORD=mi_password_seguro
       - POSTGRES_HOST=db
-      - RUNNING_IN_DOCKER=True # Agregado del amigo
+      - RUNNING_IN_DOCKER=True
     depends_on:
       - db
-      - loki # Necesario para los logs nuevos
-    # Agregado del amigo: Hace las migraciones automáticas al iniciar
+      - loki
     command: ["sh", "-c", "python manage.py makemigrations && python manage.py migrate --noinput && python manage.py runserver 0.0.0.0:8000"]
 
-  # --- FRONTEND (FUSIONADO) ---
   frontend:
     build: ./frontend
     container_name: contenedor_frontend_lupita
     restart: always
     ports:
       - "3000:3000"
-    # KEPT: Mantenemos TU variable de entorno
+    # --- RECUPERADO DE TU VERSIÓN (IMPORTANTE) ---
     environment:
       - API_URL=http://backend:8000
+    # ---------------------------------------------
     stdin_open: true
     tty: true
     depends_on:
       - backend
 
-  # --- SERVICIOS DE OBSERVABILIDAD (NUEVOS - Del Amigo) ---
+  # --- SERVICIOS DE OBSERVABILIDAD (De tu amigo) ---
 
   prometheus:
     image: prom/prometheus:latest
     container_name: contenedor_prometheus
     restart: always
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # OJO: Necesitas este archivo
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -82,14 +79,13 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
     ports:
-      - "3001:3000" # Entras por localhost:3001
+      - "3001:3000"
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus
       - loki
 
-# --- VOLÚMENES (FUSIONADOS) ---
 volumes:
   postgres_data:
   grafana_data:
