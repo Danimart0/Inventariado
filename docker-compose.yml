@@ -18,10 +18,8 @@ services:
     restart: always
     ports:
       - "8000:8000"
-    # --- RECUPERADO DE TU VERSIÓN (IMPORTANTE) ---
     volumes:
-      - ./backend:/app  # Esto permite que veas cambios sin reconstruir
-    # ---------------------------------------------
+      - ./backend:/app 
     environment:
       - POSTGRES_DB=milupita_db
       - POSTGRES_USER=mi_usuario_lupita
@@ -39,16 +37,14 @@ services:
     restart: always
     ports:
       - "3000:3000"
-    # --- RECUPERADO DE TU VERSIÓN (IMPORTANTE) ---
     environment:
       - API_URL=http://backend:8000
-    # ---------------------------------------------
     stdin_open: true
     tty: true
     depends_on:
       - backend
 
-  # --- SERVICIOS DE OBSERVABILIDAD (De tu amigo) ---
+  # --- SERVICIOS DE OBSERVABILIDAD ---
 
   prometheus:
     image: prom/prometheus:latest
