@@ -63,7 +63,8 @@ class CajeroSerializer(serializers.ModelSerializer):
     
 
     # Agrega esto dentro de class MovimientoStockSerializer...
-
+  # Agrega esto dentro de class MovimientoStockSerializer...
+  
     def create(self, validated_data):
         # 1. Crear el movimiento
         movimiento = MovimientoStock.objects.create(**validated_data)
